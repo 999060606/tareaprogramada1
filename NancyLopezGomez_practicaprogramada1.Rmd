@@ -32,4 +32,67 @@ b)Ajuste los nombres de las columnas para que estén en español.
 nombres_columnas <- c("ID", "Tipo", "Titulo", "Director", "Pais", "fecha", "año_lanzamiento", "calificacion", "Duracion", "Categoria")
 colnames(datos) <- nombres_columnas
 ```
+c. Elimine filas duplicadas. (2pts)
+```{r}
+duplicados <- get_dupes(datos) ## muestraregistros estan duplicados
+```
+
+```{r}
+datos_sin_filas_duplicadas <- distinct(datos) #cantidad conteo diferenciado
+```
+```{r}
+numero_filas_originales <- nrow(datos)
+numero_filas_sin_filas_duplicadas <- nrow(datos_sin_filas_duplicadas)
+```
+
+d. Elimine filas y columnas vacías. (2pts)
+
+```{r}
+datos_sin_vacios <- datos_sin_filas_duplicadas |> 
+  remove_empty(which = c("rows", "cols"))
+```
+
+e. Elimine la variable correspondiente al año de lanzamiento (release_year.) (2pts)
+
+```{r}
+datos_limpios <- datos_sin_vacios |> 
+  select(-año_lanzamiento) |> 
+  distinct()
+```
+
+f. Haga una inspección de las variables type y country para determinar si hay observaciones mal escritas o escritas de diferentes maneras. Si es ahí, haga la limpieza para poder homogenizar esos datos. (10pts)
+
+```{r}
+type_table <- as.data.frame(table(datos_limpios$Tipo))
+type_table #conteo de valores unico para sirve la funcion y se crea el dataframe
+```
+```{r}
+country_table <- as.data.frame(table(datos$Pais))
+country_table 
+```
+
+```{r}
+datos_limpios <- datos_limpios |>
+  mutate(across(c(Tipo), function(x) ifelse(x == "movie", "Movie", x))) |>
+  mutate(across(c(Tipo), function(x) ifelse(x == "tv show", "TV Show", x))) |>
+  mutate(across(c(Tipo), function(x) ifelse(x == "Movi", "Movie", x))) |> 
+  mutate(across(c(Tipo), function(x) ifelse(x == "TV SHOW", "TV Show", x)))
+```
+
+```{r}
+unique(datos_limpios$Tipo) #funcion para verificar si se modificaron los cambios de las variables
+```
+
+```{r}
+datos_limpios<- datos_limpios|>
+  mutate(Pais = ifelse(Pais == "united states", "United States", Pais)) |> 
+  mutate(Pais = ifelse(Pais == "india", "India", Pais)) |> 
+  mutate(pais = ifelse(Pais == "pakistan", "Pakistan", Pais)) |> 
+  mutate(pais = ifelse(Pais == "canada", "Canada", Pais))
+```
+
+```{r}
+unique(datos_limpios$Pais)
+```
+
 
