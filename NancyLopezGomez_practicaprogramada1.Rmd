@@ -95,4 +95,71 @@ datos_limpios<- datos_limpios|>
 unique(datos_limpios$Pais)
 ```
 
+g. Para todas las columnas de tipo carácter, en donde haya NA, coloque “Sin información”. (4pts)
+
+```{r}
+datos_limpios <- datos_limpios |> 
+  mutate(across(where(is.character), ~replace(., is.na(.), "Sin información")))
+```
+h. Añada a su conjunto de datos una nueva columna llamada anyo que indique el año en que el show o película fue añadido a Netflix. Añada también una columna llamada mes que indique el mes en que el show o película fue añadido a Netflix. (6pts)
+
+```{r}
+datos_limpios <- datos_limpios |> 
+  mutate(fecha = mdy(fecha))
+
+datos_limpios <- datos_limpios |>                              
+  mutate(Año = year(fecha))
+
+datos_limpios <- datos_limpios |>                              
+  mutate(Mes = month(fecha))
+```
+
+Una vez que haya terminado la limpieza anterior, responda las siguientes preguntas:
+
+i. Cuántas películas y shows de TV hay por país? (4pts)
+
+```{r}
+cantidad_pelis <- datos_limpios |> 
+  filter(Tipo %in% c("Movie", "TV Show")) |> 
+  count(Pais, Tipo) |> 
+  as.data.frame()
+```
+
+
+j. Cuáles son los 10 directores con mayor cantidad de películas (sin contar shows de TV) en Netflix?
+Ordénelos por orden descendente. (4pts)
+
+```{r}
+directores <- datos_limpios |>
+  filter(Tipo=="Movie") |>
+  count(Director, Tipo) |>
+  arrange(desc(n)) |> 
+  head(10)
+```
+k. Cuáles son los 10 directores con mayor cantidad de shows de TV (sin contar películas) en Netflix?Ordénelos por orden descendente. (4pts)
+
+```{r}
+directores10 <- datos_limpios |>
+  filter(Tipo=="TV Show") |>
+  count(Director, Tipo) |>
+  arrange(desc(n)) |> 
+  head(10)
+```
+l. Obtenga la lista de películas y shows de TV que se añadieron en marzo del año 2020. Cuántos fueron?
+(4pts)
+```{r}
+Lista_peliculas <- datos_limpios |>
+  filter(Tipo =="Movie", Año == 2020, Mes == 3)
+
+Total <- nrow(Lista_peliculas)
+#total de  peliculas 93 que se añadieron en marzo del año 2020
+```
+
+```{r}
+Lista_showTV <- datos_limpios|>
+  filter(Tipo =="TV Show", Año == 2020, Mes == 3)
+
+Total <- nrow(Lista_showTV)
+#total de Tv show 44 que se añadieron en marzo del año 2020
+```
 
